@@ -1,0 +1,60 @@
+@startuml name High Level Design
+left to right direction
+
+actor Client
+actor Agency
+actor Leader
+actor Agent
+actor Admin
+
+rectangle "System" {
+    component "User Management Service" as UMS
+    component "Facilities Service" as FS
+    component "Booking & Scheduling Service" as BSS
+    component "Live Alerts & Notification Service" as LANS
+    component "Payments Service" as PS
+    component "Help & Support Service" as HSS
+    component "Ratings Service" as RS
+    component "Location Service" as LS
+    component "Admin Service" as AS
+
+    database "Payment Gateway" as PG
+    database "Firebase (FCM)" as FCM
+    database "Google Maps API" as GMA
+}
+
+Client --> UMS : Login/Signup
+Client --> BSS : Create Order
+Client --> LANS : Receive Alerts
+Client --> RS : Submit Ratings
+Client --> PS : Make Payment
+Client --> HSS : Raise Ticket
+
+Agency --> UMS : Register/Login
+Agency --> FS : Opt-in/Opt-out Services
+Agency --> BSS : Accept Order
+Agency --> LANS : Receive Notifications
+Agency --> HSS : Resolve Tickets
+Agency --> RS : Rate Clients
+Agency --> PS : Receive Payments
+
+Leader --> UMS : Login
+Leader --> BSS : Assign Agents
+
+Agent --> UMS : Login
+Agent --> BSS : View Orders
+Agent --> LANS : Receive Alerts
+
+Admin --> UMS : Manage Users
+Admin --> FS : Update Services
+Admin --> BSS : Oversee Orders
+Admin --> HSS : Escalate Tickets
+Admin --> PS : Audit Transactions
+Admin --> RS : View Feedback
+Admin --> LS : Monitor Locations
+
+PS --> PG : Process Transactions
+LANS --> FCM : Push Notifications
+LS --> GMA : Geofencing Data
+
+@enduml
