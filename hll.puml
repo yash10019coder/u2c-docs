@@ -8,33 +8,43 @@ actor Leader
 actor Agent
 actor Admin
 
-rectangle "System" {
-    component "User Management Service" as UMS
-    component "Facilities Service" as FS
-    component "Booking & Scheduling Service" as BSS
-    component "Live Alerts & Notification Service" as LANS
-    component "Payments Service" as PS
-    component "Help & Support Service" as HSS
-    component "Ratings Service" as RS
-    component "Location Service" as LS
-    component "Admin Service" as AS
+package "System" {
+    package "Core Services" {
+        component "User Management Service" as UMS
+        component "Facilities Service" as FS
+        component "Booking & Scheduling Service" as BSS
+        component "Live Alerts & Notification Service" as LANS
+        component "Payments Service" as PS
+    }
 
+    package "Support Services" {
+        component "Help & Support Service" as HSS
+        component "Ratings Service" as RS
+        component "Location Service" as LS
+    }
+
+    package "Admin Management" {
+        component "Admin Service" as AS
+    }
+}
+
+package "Databases" {
     database "User Database" as DB_User
     database "Service Catalog Database" as DB_Facilities
     database "Order Database" as DB_Orders
     database "Transaction Database" as DB_Transactions
     database "Ratings Database" as DB_Ratings
-    queue "Kafka" as Kafka
-
 }
 
-rectangle "External Services" {
+queue "Kafka" as Kafka
 
+package "External Services" {
     component "Payment Gateway" as PG
     component "Firebase (FCM)" as FCM
     component "Google Maps API" as GMA
-    }
+}
 
+' Client Interactions
 Client --> UMS : Login/Signup
 Client --> BSS : Create Order
 Client --> LANS : Receive Notifications
@@ -42,6 +52,7 @@ Client --> PS : Make Payment
 Client --> HSS : Raise Ticket
 Client --> RS : Submit Ratings
 
+' Agency Interactions
 Agency --> UMS : Register/Login
 Agency --> FS : Opt-in Services
 Agency --> BSS : Accept Orders
@@ -49,13 +60,16 @@ Agency --> LANS : Receive Alerts
 Agency --> HSS : Resolve Issues
 Agency --> PS : View Wallet
 
+' Leader Interactions
 Leader --> UMS : Login
 Leader --> BSS : Assign Agents
 
+' Agent Interactions
 Agent --> UMS : Login
 Agent --> BSS : View Orders
 Agent --> LANS : Receive Alerts
 
+' Admin Interactions
 Admin --> UMS : Manage Users
 Admin --> FS : Configure Services
 Admin --> AS : Access Dashboard
@@ -64,6 +78,7 @@ Admin --> PS : Audit Transactions
 Admin --> HSS : Escalate Tickets
 Admin --> LS : View Geofencing Data
 
+' Service Interactions
 BSS --> LS : Fetch Geolocation Data
 BSS --> PS : Confirm Payments
 BSS --> LANS : Notify Order Status
@@ -72,12 +87,14 @@ LANS --> FCM : Push Notifications
 PS --> PG : Process Transactions
 LS --> GMA : Retrieve Maps Data
 
+' Database Interactions
 UMS --> DB_User : Store User Data
 FS --> DB_Facilities : Manage Services
 BSS --> DB_Orders : Manage Orders
 PS --> DB_Transactions : Log Transactions
 RS --> DB_Ratings : Store Feedback
 
+' Kafka Interactions
 Kafka <--> BSS : Event Queue
 Kafka <--> LANS : Notification Events
 Kafka <--> PS : Payment Events
